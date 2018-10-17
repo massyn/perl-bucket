@@ -2,11 +2,20 @@
 
 use strict;
 
-my $HOMEIP = '<your home IP address here';
+my $HOMEIP = $ARGV[0];  # specify the IP address to exclude (just in case you try to lock yourself out
 
 my $FILES;
 $FILES->{'/var/log/auth.log'} = 'sshd.+(Authentication failure|Invalid user).+from';
-$FILES->{'/var/log/apache2/error_ssl.log'} = 'script .+ not found or unable to stat';
+
+# == find the web server logs
+foreach my $l (`cat /etc/apache2/sites-enabled/* |grep -i errorlog`) {
+        chomp($l);
+        my ($log) = ($l =~ /errorlog\s+(.+)/i);
+        &log("Adding web server log - $log");
+        $FILES->{$log} = 'script .+ not found or unable to stat';
+}
+
+
 
 my $to = 300;   # timeout
 my $th = 5;     # threshold
@@ -71,12 +80,9 @@ sub tailer
 {
         my ($l,$filter,$file) = @_;
         # read the IP
-
-        &log("$file - $l");
         if($l =~ /$filter/)
         {
                 my ($ip) = ($l =~ m/(\d+\.\d+\.\d+\.\d+)/);
-                print "$ip ==> $l\n";
                 &log("Potential - $file - $ip - $l");
                 if($ip ne $HOMEIP)
                 {
