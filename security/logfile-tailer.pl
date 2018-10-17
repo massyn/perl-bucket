@@ -3,6 +3,7 @@
 use strict;
 
 my $HOMEIP = $ARGV[0];  # specify the IP address to exclude (just in case you try to lock yourself out
+&log("Using home ip = $HOMEIP");
 
 my $FILES;
 $FILES->{'/var/log/auth.log'} = 'sshd.+(Authentication failure|Invalid user).+from';
@@ -11,8 +12,10 @@ $FILES->{'/var/log/auth.log'} = 'sshd.+(Authentication failure|Invalid user).+fr
 foreach my $l (`cat /etc/apache2/sites-enabled/* |grep -i errorlog`) {
         chomp($l);
         my ($log) = ($l =~ /errorlog\s+(.+)/i);
-        &log("Adding web server log - $log");
-        $FILES->{$log} = 'script .+ not found or unable to stat';
+        if(-f $log) {
+                &log("Adding web server log - $log");
+                $FILES->{$log} = 'script .+ not found or unable to stat';
+        }
 }
 
 
