@@ -63,9 +63,10 @@ while (1)
                         }
                 }
                 close TAILLOG;
-                &checkhash();
+                
         }
-
+        
+        &checkhash();
         $started = 1;
 
         &heartbeat();
