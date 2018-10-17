@@ -18,8 +18,6 @@ foreach my $l (`cat /etc/apache2/sites-enabled/* |grep -i errorlog`) {
         }
 }
 
-
-
 my $to = 300;   # timeout
 my $th = 5;     # threshold
 my $heartbeat;          # last time a heartbeat was written
@@ -65,7 +63,7 @@ while (1)
                         }
                 }
                 close TAILLOG;
-        #       &checkhash();
+                &checkhash();
         }
 
         $started = 1;
