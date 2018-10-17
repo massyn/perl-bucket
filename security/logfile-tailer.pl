@@ -107,6 +107,7 @@ sub checkhash
                                 $c++;
                         }
                 }
+                &log(" -- IP $ip is on $c of $th");
                 $HASH{$ip} = $new;
                 if($c >= $th)
                 {
