@@ -7,6 +7,7 @@ my $HOMEIP = $ARGV[0];  # specify the IP address to exclude (just in case you tr
 
 my $FILES;
 $FILES->{'/var/log/auth.log'} = 'sshd.+(Authentication failure|Invalid user).+from';
+$FILES->{'/var/log/squid/access.log'} = 'TCP_DENIED';
 
 # == find the web server logs
 foreach my $l (`cat /etc/apache2/sites-enabled/* |grep -i errorlog`) {
@@ -21,7 +22,7 @@ foreach my $l (`cat /etc/apache2/sites-enabled/* |grep -i errorlog`) {
 my $to = 300;   # timeout
 my $th = 5;     # threshold
 my $heartbeat;          # last time a heartbeat was written
-my $heartbeat_to = 60;  # write a heartbeat at least every 60 seconds
+my $heartbeat_to = 180;  # write a heartbeat at least every 180 seconds
 
 use Fcntl qw(SEEK_SET);
 
@@ -50,7 +51,7 @@ while (1)
                 $total_pos += $pos->{$file};
 
                 # =================================================================
-                     open TAILLOG, $file or die "Cannot open $file, $!";
+                open TAILLOG, $file or die "Cannot open $file, $!";
 
                 seek TAILLOG, $pos->{$file}, SEEK_SET if defined $pos->{$file};
                 while(<TAILLOG>)
@@ -63,7 +64,6 @@ while (1)
                         }
                 }
                 close TAILLOG;
-                
         }
         
         &checkhash();
@@ -108,7 +108,6 @@ sub checkhash
                                 $c++;
                         }
                 }
-                &log(" -- IP $ip is on $c of $th");
                 $HASH{$ip} = $new;
                 if($c >= $th)
                 {
