@@ -24,6 +24,16 @@ my $th = 5;     # threshold
 my $heartbeat;          # last time a heartbeat was written
 my $heartbeat_to = 180;  # write a heartbeat at least every 180 seconds
 
+# == check if the files actually exist
+foreach my $f (keys %{$FILES}) {
+        if(-f $f) {
+                print "File $f is ok\n";
+        } else {
+                print "File $f is not readable.. Removing...\n";
+                delete $FILES->{$f};
+        }
+}
+
 use Fcntl qw(SEEK_SET);
 
 &log("$0 starting up - timeout of $to and threshold of $th");
