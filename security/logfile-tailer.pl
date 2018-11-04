@@ -19,7 +19,7 @@ foreach my $l (`cat /etc/apache2/sites-enabled/* |grep -i errorlog`) {
         }
 }
 
-my $to = 300;   # timeout
+my $to = 600;   # timeout
 my $th = 5;     # threshold
 my $heartbeat;          # last time a heartbeat was written
 my $heartbeat_to = 180;  # write a heartbeat at least every 180 seconds
